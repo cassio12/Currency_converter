@@ -2,10 +2,26 @@ import 'dart:html';
 
 import 'package:conversor_moedas/app/components/coin_box.dart';
 import 'package:conversor_moedas/app/components/coin_img.dart';
+import 'package:conversor_moedas/app/controllers/home_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final TextEditingController toValue = TextEditingController();
+  late HomeController homeController;
+  final TextEditingController fromValue = TextEditingController();  
+
+  @override
+  void initState() {
+    super.initState();
+    homeController = HomeController(toValue, fromValue);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +35,28 @@ class HomePage extends StatelessWidget {
             children: [
               Image_Coin(),
               SizedBox(height: 40.0),
-              Coin_box(),
+              Coin_box(
+                itemSelected: homeController.toCoin,
+                controller: toValue,
+                items: homeController.coins, 
+                onChanged: (model) {
+                  print(model.name);
+                  setState(() {
+                    homeController.toCoin = model;
+                  });
+                }
+              ),
               SizedBox(height: 20.0),
-              Coin_box(),
+              Coin_box(
+                itemSelected: homeController.fromCoin,
+                controller: fromValue,
+                items: homeController.coins, 
+                onChanged: (model) {
+                  setState(() {
+                    homeController.fromCoin = model;
+                  });
+                }
+              ),
               SizedBox(height:60.0),
               SizedBox(
                 width: 150.0,
@@ -30,7 +65,9 @@ class HomePage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green
                   ),
-                  onPressed: () {}, 
+                  onPressed: () {
+                    homeController.convert();
+                  }, 
                   child: Text('CONVERTER')
                 ),
               )
